@@ -1,0 +1,7 @@
+<% if @jobs.any? %>
+  <%= render @jobs %>
+<% else %>
+  <div class="container mt-4">
+    <div class="alert alert-warning">There are no jobs yet.</div>
+  </div>
+<% end %>

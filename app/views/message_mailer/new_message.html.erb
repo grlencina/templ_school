@@ -1,0 +1,6 @@
+<p> Hi <%= @recipient.email %> , </p>
+<p> You received a new message in the job posting: <%= link_to @message.conversation.job.title, job_url(@message.conversation.job) %>.</p>
+<p> Message reads: <%= @message.body %> </p>
+
+<p> Click <%= link_to "here", job_url(@message.conversation.job) %> to reply.</p>
+<p> Best regards,</p>

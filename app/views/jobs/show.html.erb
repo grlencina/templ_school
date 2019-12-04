@@ -1,0 +1,67 @@
+<h1><%= @job.title %></h1>
+<p><%= @job.description %></p>
+
+<% if @conversation.present? %>
+  <% if @job.user == current_user %>
+    <h4>Conversations with applicants</h4>
+  <% else %>
+    <h4>Conversation with the poster</h4>
+  <% end %>
+
+  <div id="job" data-props="<%= { job: ActiveModelSerializers::SerializableResource.new(@job),
+currentUser: ActiveModelSerializers::SerializableResource.new(current_user) }.to_json %>">
+</div>
+
+  <div class="conversations">
+    <% if @scope.any? %>
+      <div class="users">
+        <% @scope.each do |conversation| %>
+          <div class="conversation-preview <%= "active-conversation" if conversation == @conversation %>" data-url="<%= job_url(@job, conversation_id: conversation.id) %>">
+            <div class="avatar"><img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"></div>
+            <div class="preview">
+              <h5><%= conversation.user.email %> <span class="chat-date"><%=l conversation.messages.last.created_at, format: :short %></span></h5>
+              <p><%= conversation.messages.last.body %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="conversation<%= "-wide" if @scope.none? %>">
+      <div class="messages">
+        <% @conversation.messages.each do |message| %>
+          <% if message.user == current_user %>
+            <div class="outgoing-message">
+              <div class="bubble">
+                <p><%= message.body %></p>
+                <span class="time-date"><%=l message.created_at, format: :short %></span>
+              </div>
+            </div>
+          <% else %>
+            <div class="incoming-message">
+              <div class="avatar"><img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"></div>
+              <div class="body">
+                <div class="bubble">
+                  <p><%= message.body %></p>
+                  <span class="time-date"><%=l message.created_at, format: :short %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+      <%= form_for Message.new, url: messages_path, method: :post do |f| %>
+        <div class="d-flex flex-row type-message">
+          <%= f.hidden_field :conversation_id, value: @conversation.id %>
+          <%= f.text_field :body, placeholder: "Type a message" %>
+          <%= f.submit "Send", class: "btn btn-primary btn-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <% if @job.user == current_user %>
+    <div class="alert alert-warning">This job has no applications yet.</div>
+  <% else %>
+    <%= link_to "Apply", apply_job_path(@job), method: :post, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-primary" %>
+  <% end %>
+<% end %>

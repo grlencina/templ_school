@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  
+development:
+  <<: *default
+  database: templ_job_board_development
+  host: db 
+  port: 5432
+  username: glencina
+  password: glencina
+
+test:
+  <<: *default
+  database: templ_job_board_test
+
+production:
+  <<: *default
+  database: templ_job_board_production
+  username: templ_job_board
+  password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
